@@ -1,73 +1,100 @@
-
-import * as React from 'react';
+// Lucky Didan Ramadhan
+// HW 12
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Grid,
+  Heading,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 
 function Board() {
-  const squares = Array(9).fill(null);
-  function selectSquare(square) {
+  //penggunaan state pada squares dan nextValue, lalu membuat variabel winner dan status
+  const [squares, setSquares] = useState(Array(9).fill(null));
+  const [nextValue, setNextValue] = useState("X");
+  const winner = calculateWinner(squares);
+  const status = calculateStatus(winner, squares, nextValue);
 
+  function selectSquare(square) {
+    //penyelesaian function selectSquare
+    if (squares[square] || winner) return;
+    const updatedSquares = [...squares];
+    updatedSquares[square] = nextValue;
+    setSquares(updatedSquares);
+    setNextValue(calculateNextValue(updatedSquares));
   }
 
   function restart() {
+    setSquares(Array(9).fill(null));
+    setNextValue("X");
   }
 
   function renderSquare(i) {
     return (
-      <button className="square" onClick={() => selectSquare(i)}>
+      <Button
+        size='lg'
+        height='100px'
+        width='100px'
+        onClick={() => selectSquare(i)}
+        colorScheme='cyan'
+        variant={squares[i] ? "outline" : "outline"}
+      >
         {squares[i]}
-      </button>
+      </Button>
     );
   }
 
   return (
-    <div>
-      <div >STATUS</div>
-      <div >
+    <VStack spacing={8} mt={5}>
+      <Heading as='h2' size='lg'>
+        {status}
+      </Heading>
+      <Grid templateColumns='repeat(3, 1fr)' gap={3}>
         {renderSquare(0)}
         {renderSquare(1)}
         {renderSquare(2)}
-      </div>
-      <div >
         {renderSquare(3)}
         {renderSquare(4)}
         {renderSquare(5)}
-      </div>
-      <div >
         {renderSquare(6)}
         {renderSquare(7)}
         {renderSquare(8)}
-      </div>
-      <button onClick={restart}>
-        restart
-      </button>
-    </div>
+      </Grid>
+      <Button size='lg' onClick={restart} colorScheme='red' mt={10}>
+        Restart
+      </Button>
+    </VStack>
   );
 }
 
 function Game() {
   return (
-    <div >
-      <div >
-        <Board />
-      </div>
-    </div>
+    <Box
+      display='flex'
+      justifyContent='center'
+      alignItems='center'
+      height='100vh'
+    >
+      <Board />
+    </Box>
   );
 }
 
-// eslint-disable-next-line no-unused-vars
 function calculateStatus(winner, squares, nextValue) {
   return winner
     ? `Winner: ${winner}`
     : squares.every(Boolean)
-      ? `Scratch: Cat's game`
-      : `Next player: ${nextValue}`;
+    ? `Scratch: Cat's game`
+    : `Next player: ${nextValue}`;
 }
 
-// eslint-disable-next-line no-unused-vars
 function calculateNextValue(squares) {
-  return squares.filter(Boolean).length % 2 === 0 ? 'X' : 'O';
+  return squares.filter(Boolean).length % 2 === 0 ? "X" : "O";
 }
 
-// eslint-disable-next-line no-unused-vars
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
